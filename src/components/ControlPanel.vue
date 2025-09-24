@@ -73,7 +73,17 @@
       <!-- Quick Settings -->
       <div v-if="!trainingStore.isTraining" class="quick-settings space-y-3">
         <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors cursor-pointer" @click="toggleSound">
-          <span class="text-base font-medium">音效提醒</span>
+          <div class="flex items-center space-x-3">
+            <span class="text-base font-medium">音效提醒</span>
+            <button
+              v-if="soundEnabled"
+              @click.stop="testSound"
+              class="text-xs px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors"
+              title="測試音效"
+            >
+              🔊 測試
+            </button>
+          </div>
           <button
             @click.stop="toggleSound"
             class="toggle-switch"
@@ -86,16 +96,6 @@
           </button>
         </div>
 
-        <!-- 防休眠提示 -->
-        <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg border border-blue-700">
-          <div class="flex items-center space-x-2 mb-1">
-            <span class="text-blue-400">📱</span>
-            <span class="text-sm font-medium text-blue-300">防止螢幕休眠</span>
-          </div>
-          <p class="text-xs text-blue-200">
-            訓練期間會自動防止手機螢幕關閉，確保計時器持續顯示
-          </p>
-        </div>
       </div>
     </div>
 
@@ -159,10 +159,123 @@ export default {
       trainingStore.stopTraining()
     }
 
-    const toggleSound = () => {
+    const toggleSound = async () => {
       soundEnabled.value = !soundEnabled.value
-      // TODO: Implement sound settings
+
+      // 播放測試音效
+      if (soundEnabled.value) {
+        try {
+          await playSound('switch')
+          console.log('音效已啟用 🔊')
+        } catch (error) {
+          console.log('音效啟用失敗，可能需要用戶互動:', error)
+          // 提示用戶再次點擊
+          setTimeout(() => {
+            if (soundEnabled.value) {
+              playSound('switch')
+            }
+          }, 100)
+        }
+      } else {
+        console.log('音效已關閉 🔇')
+      }
     }
+
+    // 音效播放功能
+    const playSound = async (type) => {
+      if (!soundEnabled.value) return
+
+      try {
+        // 使用 Web Audio API 產生音效
+        let audioContext = window.cyclePulseAudioContext
+
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)()
+          window.cyclePulseAudioContext = audioContext
+        }
+
+        // 如果 AudioContext 被暫停，嘗試恢復
+        if (audioContext.state === 'suspended') {
+          await audioContext.resume()
+        }
+
+        const oscillator = audioContext.createOscillator()
+        const gainNode = audioContext.createGain()
+
+        oscillator.connect(gainNode)
+        gainNode.connect(audioContext.destination)
+
+        // 設定音效波形為更柔和的 sine 波
+        oscillator.type = 'sine'
+
+        // 不同類型的音效
+        switch (type) {
+          case 'start':
+            // 開始訓練：上升音調
+            oscillator.frequency.setValueAtTime(440, audioContext.currentTime)
+            oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.5)
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + 0.5)
+            break
+
+          case 'stage':
+            // 階段切換：雙音調
+            oscillator.frequency.setValueAtTime(660, audioContext.currentTime)
+            oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.15)
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + 0.3)
+            break
+
+          case 'complete':
+            // 完成訓練：成功音調
+            oscillator.frequency.setValueAtTime(523, audioContext.currentTime) // C5
+            oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2) // E5
+            oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4) // G5
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6)
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + 0.6)
+            break
+
+          case 'switch':
+            // 切換音效：短促音調
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1)
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + 0.1)
+            break
+
+          case 'countdown':
+            // 倒數音效：低音調
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime)
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime)
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2)
+            oscillator.start(audioContext.currentTime)
+            oscillator.stop(audioContext.currentTime + 0.2)
+            break
+        }
+      } catch (error) {
+        console.log('音效播放失敗:', error)
+      }
+    }
+
+    // 測試音效函數
+    const testSound = async () => {
+      try {
+        await playSound('start')
+        console.log('測試音效播放成功 🎵')
+      } catch (error) {
+        console.log('測試音效播放失敗:', error)
+      }
+    }
+
+    // 暴露音效播放函數給其他組件使用
+    window.playCyclePulseSound = playSound
 
     return {
       trainingStore,
@@ -174,7 +287,8 @@ export default {
       startTraining,
       togglePause,
       stopTraining,
-      toggleSound
+      toggleSound,
+      testSound
     }
   }
 }
@@ -204,5 +318,79 @@ export default {
 .validation-message {
   backdrop-filter: blur(8px);
   border-left: 4px solid #ef4444;
+}
+
+/* 直式螢幕優化 */
+@media (orientation: portrait) and (max-height: 800px) {
+  .control-panel {
+    @apply space-y-2;
+  }
+
+  .mode-selection {
+    @apply mb-3;
+  }
+
+  .mode-title {
+    @apply mb-3 text-base;
+  }
+
+  .quick-settings {
+    @apply space-y-2;
+  }
+
+  .quick-settings > * {
+    @apply p-3;
+  }
+
+  .control-buttons {
+    @apply space-y-3;
+  }
+
+  .btn-primary {
+    @apply py-3 text-lg;
+  }
+
+  .btn-secondary {
+    @apply py-2 text-base;
+  }
+}
+
+/* 極小直式螢幕進一步優化 */
+@media (orientation: portrait) and (max-height: 700px) {
+  .mode-selection {
+    @apply mb-2;
+  }
+
+  .mode-title {
+    @apply text-sm mb-2;
+  }
+
+  .quick-settings > * {
+    @apply p-2;
+  }
+
+  .quick-settings span {
+    @apply text-sm;
+  }
+
+  .control-buttons {
+    @apply space-y-2;
+  }
+
+  .btn-primary {
+    @apply py-2 text-base;
+  }
+
+  .btn-secondary {
+    @apply py-1 text-sm;
+  }
+
+  .toggle-switch {
+    @apply h-6 w-12;
+  }
+
+  .toggle-circle {
+    @apply h-4 w-4;
+  }
 }
 </style>

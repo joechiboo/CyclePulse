@@ -68,13 +68,13 @@ export default {
     })
 
     const progressPercentage = computed(() => {
-      if (!trainingStore.currentStage) return 0
+      if (!trainingStore.currentStage || !trainingStore.isTraining) return 0
       const stageProgress = ((trainingStore.currentStage.duration - trainingStore.currentTime) / trainingStore.currentStage.duration) * 100
       return Math.max(0, Math.min(100, stageProgress))
     })
 
     const overallProgress = computed(() => {
-      if (!trainingStore.currentMode) return 0
+      if (!trainingStore.selectedMode || !trainingStore.isTraining) return 0
       const completedStages = trainingStore.currentStageIndex
       const currentStageProgress = progressPercentage.value / 100
       const totalProgress = (completedStages + currentStageProgress) / totalStages.value * 100

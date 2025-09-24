@@ -7,9 +7,6 @@
     >
       {{ formattedTime }}
     </div>
-    <div v-if="timeLabel" class="text-center text-lg text-gray-300 mt-2">
-      {{ timeLabel }}
-    </div>
   </div>
 </template>
 
@@ -28,13 +25,6 @@ export default {
       return `${minutes}:${seconds.toString().padStart(2, '0')}`
     })
 
-    const timeLabel = computed(() => {
-      if (trainingStore.isTraining) {
-        return trainingStore.currentStage?.name || '訓練中'
-      }
-      return ''
-    })
-
     const timerClasses = computed(() => ({
       'text-intensity-low': trainingStore.currentIntensity === 'low',
       'text-intensity-medium': trainingStore.currentIntensity === 'medium',
@@ -47,7 +37,6 @@ export default {
 
     return {
       formattedTime,
-      timeLabel,
       timerClasses,
       trainingStore
     }
