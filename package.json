@@ -1,0 +1,35 @@
+{
+  "name": "cyclepulse",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist",
+    "predeploy": "npm run build"
+  },
+  "keywords": [
+    "vue",
+    "spinning",
+    "fitness",
+    "workout",
+    "timer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "專為飛輪訓練設計的智能計時應用",
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "pinia": "^3.0.3",
+    "qrcode": "^1.5.4",
+    "vite": "^7.1.7",
+    "vue": "^3.5.21"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "gh-pages": "^6.3.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  }
+}

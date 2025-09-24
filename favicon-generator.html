@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CyclePulse Favicon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .favicon-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .favicon-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .favicon-display {
+            background: #0f0f0f;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        canvas {
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>CyclePulse Favicon Generator</h1>
+    <p>右鍵點擊下方圖片另存為 PNG 格式</p>
+
+    <div class="favicon-container">
+        <div class="favicon-item">
+            <h3>16x16 (favicon.png)</h3>
+            <div class="favicon-display">
+                <canvas id="favicon16" width="16" height="16"></canvas>
+            </div>
+        </div>
+
+        <div class="favicon-item">
+            <h3>32x32 (favicon-32x32.png)</h3>
+            <div class="favicon-display">
+                <canvas id="favicon32" width="32" height="32"></canvas>
+            </div>
+        </div>
+
+        <div class="favicon-item">
+            <h3>192x192 (android-chrome-192x192.png)</h3>
+            <div class="favicon-display">
+                <canvas id="favicon192" width="192" height="192"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function drawFavicon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const center = size / 2;
+            const radius = size * 0.4;
+
+            // Background circle
+            ctx.fillStyle = '#0f0f0f';
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.47, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = size * 0.06;
+            ctx.stroke();
+
+            // Outer rim with gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#22c55e');
+            gradient.addColorStop(0.5, '#f59e0b');
+            gradient.addColorStop(1, '#ef4444');
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = size * 0.06;
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Spokes
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = size * 0.03;
+            ctx.lineCap = 'round';
+
+            // Main spokes
+            ctx.beginPath();
+            ctx.moveTo(center, center - radius);
+            ctx.lineTo(center, center + radius);
+            ctx.moveTo(center - radius, center);
+            ctx.lineTo(center + radius, center);
+
+            // Diagonal spokes
+            const diag = radius * 0.7;
+            ctx.moveTo(center - diag, center - diag);
+            ctx.lineTo(center + diag, center + diag);
+            ctx.moveTo(center + diag, center - diag);
+            ctx.lineTo(center - diag, center + diag);
+            ctx.stroke();
+
+            // Center hub
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.09, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#0f0f0f';
+            ctx.beginPath();
+            ctx.arc(center, center, size * 0.045, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Intensity indicators
+            const indicatorSize = size * 0.045;
+            const indicatorRadius = radius + size * 0.06;
+
+            // Top - green
+            ctx.fillStyle = '#22c55e';
+            ctx.beginPath();
+            ctx.arc(center, center - indicatorRadius, indicatorSize, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Right - orange
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(center + indicatorRadius, center, indicatorSize, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Bottom - red
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(center, center + indicatorRadius, indicatorSize, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Left - blue
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath();
+            ctx.arc(center - indicatorRadius, center, indicatorSize, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Generate favicons
+        drawFavicon(document.getElementById('favicon16'), 16);
+        drawFavicon(document.getElementById('favicon32'), 32);
+        drawFavicon(document.getElementById('favicon192'), 192);
+
+        // Add download functionality
+        document.querySelectorAll('canvas').forEach(canvas => {
+            canvas.addEventListener('click', function() {
+                const link = document.createElement('a');
+                link.download = `favicon-${canvas.width}x${canvas.height}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>

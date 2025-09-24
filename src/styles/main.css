@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cycle-darker text-white font-sans;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  html, body, #app {
+    @apply h-full overflow-hidden;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-white text-cycle-dark px-6 py-3 rounded-lg font-semibold text-lg
+           transition-all duration-200 active:scale-95 hover:bg-gray-100;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-white text-white px-6 py-3 rounded-lg font-semibold text-lg
+           transition-all duration-200 active:scale-95 hover:bg-white hover:text-cycle-dark;
+  }
+
+  .timer-display {
+    @apply text-timer font-mono font-bold text-center leading-none;
+  }
+
+  .stage-indicator {
+    @apply text-2xl font-bold text-center mb-4;
+  }
+
+  .intensity-bar {
+    @apply h-4 rounded-full transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  /* 橫向模式優化 - 針對手機放在飛輪車把上的使用場景 */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .app-container {
+      @apply flex-row gap-8 px-8;
+    }
+
+    .main-display {
+      @apply flex-1 flex flex-col justify-center items-center;
+    }
+
+    .side-controls {
+      @apply w-80 flex flex-col justify-center;
+    }
+
+    .timer-display {
+      @apply text-6xl;
+    }
+
+    .stage-indicator {
+      @apply text-lg mb-2;
+    }
+
+    .stage-container .text-sm {
+      @apply text-xs;
+    }
+
+    .control-panel {
+      @apply max-w-none;
+    }
+
+    .mode-selection .grid-cols-2 {
+      @apply grid-cols-1 gap-2;
+    }
+
+    .mode-button {
+      @apply p-2 text-sm;
+    }
+
+    .btn-primary, .btn-secondary {
+      @apply py-2 text-base;
+    }
+
+    .control-buttons .space-y-4 > * + * {
+      @apply mt-2;
+    }
+
+    .progress-container {
+      @apply max-w-sm;
+    }
+
+    .mode-title {
+      @apply hidden;
+    }
+
+    .donation-btn {
+      @apply text-xs py-2;
+    }
+  }
+
+  /* 超小橫向螢幕優化 */
+  @media (orientation: landscape) and (max-height: 400px) {
+    .timer-display {
+      @apply text-5xl;
+    }
+
+    .stage-indicator {
+      @apply text-base mb-1;
+    }
+
+    .intensity-meter .text-center {
+      @apply text-xs;
+    }
+
+    .btn-primary, .btn-secondary {
+      @apply py-1 px-4 text-sm;
+    }
+
+    .mode-button {
+      @apply p-1;
+    }
+
+    .side-controls {
+      @apply w-64;
+    }
+  }
+
+  /* 橫向模式下的特殊布局類 */
+  .landscape-layout {
+    @apply lg:flex-row lg:gap-8;
+  }
+
+  .landscape-main {
+    @apply lg:flex-1 lg:justify-center lg:items-center;
+  }
+
+  .landscape-sidebar {
+    @apply lg:w-80 lg:flex-shrink-0;
+  }
+}
