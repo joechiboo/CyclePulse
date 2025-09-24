@@ -85,6 +85,17 @@
             ></div>
           </button>
         </div>
+
+        <!-- 防休眠提示 -->
+        <div class="p-3 bg-blue-900 bg-opacity-30 rounded-lg border border-blue-700">
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-blue-400">📱</span>
+            <span class="text-sm font-medium text-blue-300">防止螢幕休眠</span>
+          </div>
+          <p class="text-xs text-blue-200">
+            訓練期間會自動防止手機螢幕關閉，確保計時器持續顯示
+          </p>
+        </div>
       </div>
     </div>
 

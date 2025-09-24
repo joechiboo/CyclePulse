@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useTrainingStore } from './stores/training'
 import TimerDisplay from './components/TimerDisplay.vue'
 import StageIndicator from './components/StageIndicator.vue'
@@ -75,6 +75,95 @@ export default {
     const showDonation = ref(false)
     const showKnowledge = ref(false)
     const trainingStore = useTrainingStore()
+    let wakeLock = null
+
+    // 防止螢幕休眠的函數
+    const requestWakeLock = async () => {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen')
+          console.log('螢幕保持喚醒已啟用')
+        }
+      } catch (err) {
+        console.log('無法啟用螢幕保持喚醒:', err)
+        // 降級方案：使用 NoSleep.js 或其他方法
+        fallbackKeepAwake()
+      }
+    }
+
+    // 釋放螢幕喚醒鎖
+    const releaseWakeLock = () => {
+      if (wakeLock) {
+        wakeLock.release()
+        wakeLock = null
+        console.log('螢幕保持喚醒已關閉')
+      }
+    }
+
+    // 降級方案：定期觸發小幅度的視覺變化
+    let keepAwakeInterval = null
+    const fallbackKeepAwake = () => {
+      if (keepAwakeInterval) clearInterval(keepAwakeInterval)
+
+      keepAwakeInterval = setInterval(() => {
+        // 創建一個幾乎不可見的元素來防止休眠
+        const wakup = document.createElement('div')
+        wakup.style.position = 'fixed'
+        wakup.style.top = '-1px'
+        wakup.style.left = '-1px'
+        wakup.style.width = '1px'
+        wakup.style.height = '1px'
+        wakup.style.opacity = '0.01'
+        wakup.style.pointerEvents = 'none'
+        document.body.appendChild(wakup)
+
+        setTimeout(() => {
+          if (wakup.parentNode) {
+            wakup.parentNode.removeChild(wakup)
+          }
+        }, 100)
+      }, 15000) // 每15秒觸發一次
+    }
+
+    const stopKeepAwake = () => {
+      if (keepAwakeInterval) {
+        clearInterval(keepAwakeInterval)
+        keepAwakeInterval = null
+      }
+    }
+
+    // 監聽訓練狀態變化
+    const handleTrainingStateChange = () => {
+      if (trainingStore.isTraining) {
+        requestWakeLock()
+      } else {
+        releaseWakeLock()
+        stopKeepAwake()
+      }
+    }
+
+    // 監聽頁面可見性變化（當用戶切換tab時重新請求wakeLock）
+    const handleVisibilityChange = () => {
+      if (!document.hidden && trainingStore.isTraining) {
+        requestWakeLock()
+      }
+    }
+
+    onMounted(() => {
+      // 監聽頁面可見性
+      document.addEventListener('visibilitychange', handleVisibilityChange)
+    })
+
+    // 監聽訓練狀態變化
+    watch(() => trainingStore.isTraining, () => {
+      handleTrainingStateChange()
+    })
+
+    onUnmounted(() => {
+      releaseWakeLock()
+      stopKeepAwake()
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    })
 
     return {
       showDonation,
