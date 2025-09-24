@@ -67,8 +67,30 @@
 					</div>
 				</div>
 
+				<!-- About Author -->
+				<div v-if="!showQRCode" class="author-section mt-6 p-4 bg-gray-50 rounded-lg">
+					<div class="text-sm text-gray-600 space-y-3">
+						<div class="flex items-center justify-center">
+							<a href="https://joechiboo.github.io/" target="_blank" rel="noopener noreferrer"
+							   class="author-link group flex items-center space-x-3 px-4 py-3 bg-white rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md">
+								<div class="flex items-center space-x-2">
+									<span class="text-xl group-hover:animate-bounce">🌐</span>
+									<span class="font-medium text-gray-700 group-hover:text-blue-600">關於作者</span>
+								</div>
+								<svg class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transform group-hover:translate-x-1 transition-all duration-200"
+									 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+								</svg>
+							</a>
+						</div>
+						<div class="text-center">
+							<p class="text-gray-600 italic text-sm">熱愛運動科技的開發者 🚴‍♂️💻</p>
+						</div>
+					</div>
+				</div>
+
 				<!-- Info -->
-				<div v-if="!showQRCode" class="info-section mt-6 text-center">
+				<div v-if="!showQRCode" class="info-section mt-4 text-center">
 					<div class="text-xs text-gray-500 space-y-1">
 						<div>💡 贊助完全自願，應用永久免費使用</div>
 						<div>🔒 使用 LINE 官方轉帳功能，安全可靠</div>

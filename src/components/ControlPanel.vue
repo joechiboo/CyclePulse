@@ -2,7 +2,12 @@
   <div class="control-panel w-full max-w-md">
     <!-- Training Mode Selection -->
     <div v-if="!trainingStore.isTraining" class="mode-selection mb-6">
-      <div class="mode-title text-center text-lg font-semibold mb-4">選擇訓練模式(18分鐘)</div>
+      <div class="mode-title text-center text-lg font-semibold mb-4">
+        選擇訓練模式
+        <span v-if="trainingStore.selectedMode" class="text-sm text-gray-400">
+          ({{ trainingStore.selectedMode.duration }}分鐘)
+        </span>
+      </div>
 
       <!-- Validation Error Message -->
       <div
@@ -67,20 +72,19 @@
 
       <!-- Quick Settings -->
       <div v-if="!trainingStore.isTraining" class="quick-settings space-y-3">
-        <div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-          <span class="text-sm">音效提醒</span>
+        <div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors cursor-pointer" @click="toggleSound">
+          <span class="text-base font-medium">音效提醒</span>
           <button
-            @click="toggleSound"
+            @click.stop="toggleSound"
             class="toggle-switch"
             :class="{ 'bg-green-500': soundEnabled, 'bg-gray-600': !soundEnabled }"
           >
             <div
               class="toggle-circle"
-              :class="{ 'translate-x-6': soundEnabled, 'translate-x-1': !soundEnabled }"
+              :class="{ 'translate-x-8': soundEnabled, 'translate-x-1': !soundEnabled }"
             ></div>
           </button>
         </div>
-
       </div>
     </div>
 
@@ -88,7 +92,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useTrainingStore } from '../stores/training'
 
 export default {
@@ -99,6 +103,16 @@ export default {
     const showValidationError = ref(false)
 
     const availableModes = computed(() => trainingStore.availableModes)
+
+    // 組件掛載時自動選擇經典模式
+    onMounted(() => {
+      if (!trainingStore.selectedMode) {
+        const classicMode = trainingStore.availableModes.find(mode => mode.id === 'classic-interval')
+        if (classicMode) {
+          trainingStore.selectMode(classicMode)
+        }
+      }
+    })
 
     const selectMode = (mode) => {
       trainingStore.selectMode(mode)
@@ -157,11 +171,11 @@ export default {
 
 <style scoped>
 .toggle-switch {
-  @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200;
+  @apply relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-200;
 }
 
 .toggle-circle {
-  @apply h-4 w-4 transform rounded-full bg-white transition-transform duration-200;
+  @apply h-6 w-6 transform rounded-full bg-white transition-transform duration-200 shadow-sm;
 }
 
 /* 搖擺動畫 */

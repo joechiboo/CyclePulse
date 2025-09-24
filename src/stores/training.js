@@ -70,8 +70,8 @@ export const useTrainingStore = defineStore('training', () => {
     },
     {
       id: 'fat-burn',
-      name: '燃脂',
-      duration: 18,
+      name: '快速燃脂',
+      duration: 17,
       description: '短暖身 + 高變化間歇 + 短收操',
       stages: [
         { name: '快速暖身', duration: 180, intensity: 'low' }, // 3分鐘
@@ -90,7 +90,7 @@ export const useTrainingStore = defineStore('training', () => {
         { name: '中強度', duration: 90, intensity: 'medium' },
         { name: '衝刺', duration: 30, intensity: 'high' },
         { name: '恢復', duration: 60, intensity: 'low' },
-        { name: '快速收操', duration: 180, intensity: 'rest' } // 3分鐘
+        { name: '快速收操', duration: 120, intensity: 'rest' } // 2分鐘
       ]
     }
   ])
@@ -196,6 +196,16 @@ export const useTrainingStore = defineStore('training', () => {
     stopTraining()
     selectedMode.value = null
   }
+
+  // 初始化時設定經典模式為預設
+  const initializeDefaultMode = () => {
+    if (!selectedMode.value) {
+      selectedMode.value = availableModes.value.find(mode => mode.id === 'classic-interval')
+    }
+  }
+
+  // 自動初始化預設模式
+  initializeDefaultMode()
 
   return {
     // State

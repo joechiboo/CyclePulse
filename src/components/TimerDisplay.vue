@@ -1,6 +1,7 @@
 <template>
   <div class="timer-container mb-8">
     <div
+      v-if="trainingStore.isTraining"
       class="timer-display"
       :class="timerClasses"
     >
@@ -47,7 +48,8 @@ export default {
     return {
       formattedTime,
       timeLabel,
-      timerClasses
+      timerClasses,
+      trainingStore
     }
   }
 }

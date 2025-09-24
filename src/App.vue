@@ -14,6 +14,16 @@
       <ControlPanel />
     </div>
 
+    <!-- 浮動按鈕組 -->
+    <!-- 知識指南按鈕 -->
+    <button
+      @click="showKnowledge = true"
+      class="fixed bottom-20 right-4 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center text-lg hover:scale-110 active:scale-95 z-40"
+      title="飛輪訓練指南"
+    >
+      📚
+    </button>
+
     <!-- 浮動贊助按鈕 -->
     <button
       @click="showDonation = true"
@@ -30,6 +40,12 @@
       :isVisible="showDonation"
       @close="showDonation = false"
     />
+
+    <!-- 知識指南彈窗 -->
+    <KnowledgeModal
+      :isVisible="showKnowledge"
+      @close="showKnowledge = false"
+    />
   </div>
 </template>
 
@@ -42,6 +58,7 @@ import IntensityMeter from './components/IntensityMeter.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import FlashOverlay from './components/FlashOverlay.vue'
 import DonationModal from './components/DonationModal.vue'
+import KnowledgeModal from './components/KnowledgeModal.vue'
 
 export default {
   name: 'CyclePulseApp',
@@ -51,14 +68,17 @@ export default {
     IntensityMeter,
     ControlPanel,
     FlashOverlay,
-    DonationModal
+    DonationModal,
+    KnowledgeModal
   },
   setup() {
     const showDonation = ref(false)
+    const showKnowledge = ref(false)
     const trainingStore = useTrainingStore()
 
     return {
       showDonation,
+      showKnowledge,
       trainingStore
     }
   }
