@@ -10,12 +10,12 @@
 				</div>
 
 				<!-- Donation Options -->
-				<div class="donation-options space-y-3 mb-6">
+				<div v-if="!showQRCode" class="donation-options space-y-3 mb-6">
 					<button
 						v-for="option in donationOptions"
 						:key="option.id"
 						@click="selectDonation(option)"
-						class="donation-option w-full p-4 border-2 border-green-500 bg-green-50 rounded-lg text-left transition-all duration-200 hover:border-green-600 hover:bg-green-100"
+						class="donation-option w-full p-4 border-2 border-gray-300 bg-white rounded-lg text-left transition-all duration-200 hover:border-green-600 hover:bg-green-50"
 						:class="{ 'border-green-600 bg-green-100 shadow-md': selectedOption?.id === option.id }"
 					>
 						<div class="flex items-center justify-between">
@@ -29,14 +29,13 @@
 				</div>
 
 				<!-- LinePay Button -->
-				<div class="linepay-section">
+				<div v-if="!showQRCode" class="linepay-section">
 					<button
 						@click="proceedToLinePay"
-						:disabled="!selectedOption"
-						class="linepay-button w-full py-6 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center space-x-4 relative overflow-hidden"
+						:disabled="isMobile && !selectedOption"
+						class="linepay-button w-full py-6 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center space-x-4 relative overflow-hidden bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl"
 						:class="{
-							'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl': selectedOption,
-							'bg-gray-300 text-gray-500 cursor-not-allowed': !selectedOption,
+							'opacity-50 cursor-not-allowed': isMobile && !selectedOption,
 						}"
 					>
 						<div class="flex items-center space-x-4">
@@ -55,19 +54,19 @@
 				</div>
 
 				<!-- QR Code Display for Desktop -->
-				<div v-if="showQRCode && !isMobile" class="qr-code-section mt-6 text-center">
-					<div class="bg-gray-50 p-6 rounded-lg border">
-						<div class="text-lg font-semibold mb-4">掃描 QR Code 完成贊助</div>
-						<div class="flex justify-center mb-4">
-							<div class="qr-code-container bg-white p-4 rounded-lg shadow-md">
-								<canvas ref="qrCanvas" width="200" height="200" class="border"></canvas>
+				<div v-if="showQRCode && !isMobile" class="qr-code-section text-center">
+					<div class="bg-gray-50 p-8 rounded-lg border">
+						<div class="text-xl font-semibold mb-6">掃描 QR Code 完成贊助</div>
+						<div class="flex justify-center mb-6">
+							<div class="qr-code-container bg-white p-6 rounded-lg shadow-lg">
+								<img src="/linePay.png" alt="LINE Pay QR Code" class="w-60 h-60 object-contain rounded" />
 							</div>
 						</div>
-						<div class="text-sm text-gray-600 mb-4">
-							贊助金額：<span class="font-bold text-green-600">${{ selectedOption?.amount.toLocaleString() }}</span>
+						<div class="text-base text-gray-700 mb-6">
+							贊助金額：<span class="font-bold text-green-600 text-lg">${{ (selectedOption?.amount || 100).toLocaleString() }}</span>
 						</div>
-						<button @click="showQRCode = false" class="text-sm text-gray-500 hover:text-gray-700">
-							← 返回
+						<button @click="showQRCode = false" class="bg-gray-200 hover:bg-gray-300 px-6 py-2 rounded-lg text-gray-700 transition-colors duration-200">
+							← 返回選擇
 						</button>
 					</div>
 				</div>
@@ -87,7 +86,6 @@
 
 <script>
 	import { ref, computed, nextTick } from 'vue';
-	import QRCode from 'qrcode';
 
 	export default {
 		name: 'DonationModal',
@@ -101,7 +99,6 @@
 		setup(props, { emit }) {
 			const selectedOption = ref(null);
 			const showQRCode = ref(false);
-			const qrCanvas = ref(null);
 
 			// 檢測是否為手機設備
 			const isMobile = ref(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
@@ -157,41 +154,21 @@
 				return `${baseUrl}?${params.toString()}`;
 			};
 
-			const generateQRCode = async (url) => {
-				try {
-					await nextTick();
-					if (qrCanvas.value) {
-						await QRCode.toCanvas(qrCanvas.value, url, {
-							width: 200,
-							margin: 2,
-							color: {
-								dark: '#000000',
-								light: '#FFFFFF'
-							}
-						});
-					}
-				} catch (error) {
-					console.error('QR Code generation failed:', error);
-				}
-			};
 
 			const proceedToLinePay = async () => {
-				const amount = selectedOption.value?.amount;
-
-				if (amount && amount >= 50) {
-					console.log(`準備使用 LINE Pay 贊助 $${amount}`);
-					const linePayUrl = generateLinePayUrl(amount);
-
-					if (isMobile.value) {
-						// 手機端：直接跳轉到 LINE 轉帳
+				if (isMobile.value) {
+					// 手機端：需要選擇金額才能跳轉
+					const amount = selectedOption.value?.amount;
+					if (amount && amount >= 50) {
+						console.log(`準備使用 LINE Pay 贊助 $${amount}`);
+						const linePayUrl = generateLinePayUrl(amount);
 						window.open(linePayUrl, '_blank');
 						// 關閉 modal
 						emit('close');
-					} else {
-						// 桌面端：顯示 QR Code
-						showQRCode.value = true;
-						await generateQRCode(linePayUrl);
 					}
+				} else {
+					// 桌面端：直接顯示 QR Code PNG
+					showQRCode.value = true;
 				}
 			};
 
@@ -200,7 +177,6 @@
 				donationOptions,
 				isMobile,
 				showQRCode,
-				qrCanvas,
 				selectDonation,
 				handleOverlayClick,
 				handleImageError,
