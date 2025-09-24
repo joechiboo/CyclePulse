@@ -6,7 +6,7 @@
     >
       {{ formattedTime }}
     </div>
-    <div class="text-center text-lg text-gray-300 mt-2">
+    <div v-if="timeLabel" class="text-center text-lg text-gray-300 mt-2">
       {{ timeLabel }}
     </div>
   </div>
@@ -31,7 +31,7 @@ export default {
       if (trainingStore.isTraining) {
         return trainingStore.currentStage?.name || '訓練中'
       }
-      return '準備開始'
+      return ''
     })
 
     const timerClasses = computed(() => ({

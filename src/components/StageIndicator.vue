@@ -3,8 +3,11 @@
     <div class="stage-indicator" :class="stageClasses">
       {{ currentStageName }}
     </div>
-    <div class="text-center text-sm text-gray-400 mb-4">
+    <div v-if="trainingStore.isTraining" class="text-center text-sm text-gray-400 mb-4">
       第 {{ currentStageIndex + 1 }} / {{ totalStages }} 階段
+    </div>
+    <div v-else-if="trainingStore.selectedMode" class="text-center text-sm text-gray-400 mb-4">
+      共 {{ totalStages }} 個訓練階段
     </div>
     <div class="progress-container w-full max-w-md mx-auto">
       <div class="bg-gray-700 rounded-full h-2 mb-2">
@@ -22,7 +25,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useTrainingStore } from '../stores/training'
 
 export default {
@@ -31,16 +34,37 @@ export default {
     const trainingStore = useTrainingStore()
 
     const currentStageName = computed(() => {
-      if (!trainingStore.currentStage) return '準備開始'
-      return trainingStore.currentStage.name
+      if (!trainingStore.isTraining) {
+        if (shouldShowError.value) {
+          return '請先選擇訓練模式'
+        }
+        if (trainingStore.selectedMode) {
+          return trainingStore.selectedMode.description
+        }
+        return '選擇模式開始訓練'
+      }
+      return trainingStore.currentStage?.name || '訓練中'
     })
+
+    const shouldShowError = ref(false)
+
+    // 監聽來自其他組件的驗證錯誤事件
+    const handleValidationError = () => {
+      shouldShowError.value = true
+      setTimeout(() => {
+        shouldShowError.value = false
+      }, 3000)
+    }
+
+    // 暴露方法給其他組件使用
+    window.showStageValidationError = handleValidationError
 
     const currentStageIndex = computed(() => {
       return trainingStore.currentStageIndex
     })
 
     const totalStages = computed(() => {
-      return trainingStore.currentMode?.stages?.length || 0
+      return trainingStore.selectedMode?.stages?.length || 0
     })
 
     const progressPercentage = computed(() => {
@@ -58,11 +82,12 @@ export default {
     })
 
     const stageClasses = computed(() => ({
-      'text-intensity-low': trainingStore.currentIntensity === 'low',
-      'text-intensity-medium': trainingStore.currentIntensity === 'medium',
-      'text-intensity-high': trainingStore.currentIntensity === 'high',
-      'text-intensity-rest': trainingStore.currentIntensity === 'rest',
-      'text-white': !trainingStore.currentIntensity
+      'text-red-400': shouldShowError.value,
+      'text-intensity-low': !shouldShowError.value && trainingStore.currentIntensity === 'low',
+      'text-intensity-medium': !shouldShowError.value && trainingStore.currentIntensity === 'medium',
+      'text-intensity-high': !shouldShowError.value && trainingStore.currentIntensity === 'high',
+      'text-intensity-rest': !shouldShowError.value && trainingStore.currentIntensity === 'rest',
+      'text-white': !shouldShowError.value && !trainingStore.currentIntensity
     }))
 
     const progressBarClasses = computed(() => ({
@@ -74,13 +99,15 @@ export default {
     }))
 
     return {
+      trainingStore,
       currentStageName,
       currentStageIndex,
       totalStages,
       progressPercentage,
       overallProgress,
       stageClasses,
-      progressBarClasses
+      progressBarClasses,
+      shouldShowError
     }
   }
 }

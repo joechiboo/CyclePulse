@@ -35,6 +35,7 @@
 
 <script>
 import { ref } from 'vue'
+import { useTrainingStore } from './stores/training'
 import TimerDisplay from './components/TimerDisplay.vue'
 import StageIndicator from './components/StageIndicator.vue'
 import IntensityMeter from './components/IntensityMeter.vue'
@@ -54,9 +55,11 @@ export default {
   },
   setup() {
     const showDonation = ref(false)
+    const trainingStore = useTrainingStore()
 
     return {
-      showDonation
+      showDonation,
+      trainingStore
     }
   }
 }
