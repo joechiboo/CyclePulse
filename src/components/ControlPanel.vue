@@ -2,7 +2,7 @@
   <div class="control-panel w-full max-w-md">
     <!-- Training Mode Selection -->
     <div v-if="!trainingStore.isTraining" class="mode-selection mb-6">
-      <div class="mode-title text-center text-lg font-semibold mb-4">選擇訓練模式</div>
+      <div class="mode-title text-center text-lg font-semibold mb-4">選擇訓練模式(18分鐘)</div>
 
       <!-- Validation Error Message -->
       <div
@@ -20,7 +20,7 @@
       </div>
 
       <div
-        class="grid grid-cols-2 gap-3 mb-6 transition-all duration-500"
+        class="grid grid-cols-4 gap-2 mb-6 transition-all duration-500"
         :class="{
           'ring-2 ring-red-400 ring-opacity-60 rounded-lg p-2 shadow-lg shadow-red-100': showValidationError,
           'animate-pulse': showValidationError
@@ -30,11 +30,10 @@
           v-for="mode in availableModes"
           :key="mode.id"
           @click="selectMode(mode)"
-          class="mode-button p-4 rounded-lg border-2 transition-all duration-200 active:scale-95"
+          class="mode-button p-3 rounded-lg border-2 transition-all duration-200 active:scale-95 text-center"
           :class="selectedModeClasses(mode)"
         >
           <div class="font-semibold">{{ mode.name }}</div>
-          <div class="text-sm opacity-75 mt-1">{{ mode.duration }}分鐘</div>
         </button>
       </div>
     </div>

@@ -14,7 +14,7 @@ export const useTrainingStore = defineStore('training', () => {
   const availableModes = ref([
     {
       id: 'classic-interval',
-      name: '經典間歇',
+      name: '經典',
       duration: 18,
       description: '暖身 + 10輪間歇 + 收操',
       stages: [
@@ -42,7 +42,7 @@ export const useTrainingStore = defineStore('training', () => {
     },
     {
       id: 'hill-climb',
-      name: '爬坡挑戰',
+      name: '爬坡',
       duration: 18,
       description: '暖身 + 3輪爬坡 + 收操',
       stages: [
@@ -70,8 +70,8 @@ export const useTrainingStore = defineStore('training', () => {
     },
     {
       id: 'fat-burn',
-      name: '快速燃脂',
-      duration: 17,
+      name: '燃脂',
+      duration: 18,
       description: '短暖身 + 高變化間歇 + 短收操',
       stages: [
         { name: '快速暖身', duration: 180, intensity: 'low' }, // 3分鐘
@@ -90,7 +90,7 @@ export const useTrainingStore = defineStore('training', () => {
         { name: '中強度', duration: 90, intensity: 'medium' },
         { name: '衝刺', duration: 30, intensity: 'high' },
         { name: '恢復', duration: 60, intensity: 'low' },
-        { name: '快速收操', duration: 120, intensity: 'rest' } // 2分鐘
+        { name: '快速收操', duration: 180, intensity: 'rest' } // 3分鐘
       ]
     }
   ])

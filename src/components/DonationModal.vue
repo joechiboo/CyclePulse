@@ -32,11 +32,7 @@
 				<div v-if="!showQRCode" class="linepay-section">
 					<button
 						@click="proceedToLinePay"
-						:disabled="isMobile && !selectedOption"
 						class="linepay-button w-full py-6 rounded-lg font-semibold text-lg transition-all duration-200 flex items-center justify-center space-x-4 relative overflow-hidden bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl"
-						:class="{
-							'opacity-50 cursor-not-allowed': isMobile && !selectedOption,
-						}"
 					>
 						<div class="flex items-center space-x-4">
 							<img src="/linePay.png" alt="LINE Pay" class="h-10 w-auto object-contain" @error="handleImageError" />
@@ -44,17 +40,17 @@
 						</div>
 
 						<!-- Mobile hint -->
-						<div v-if="isMobile" class="absolute top-0 right-2 text-xs opacity-75">直接跳轉</div>
+						<div v-if="isMobile" class="absolute top-0 right-2 text-xs opacity-75">顯示 QR Code</div>
 					</button>
 
 					<!-- Desktop hint -->
 					<div v-if="!isMobile" class="text-center mt-3">
-						<div class="text-xs text-gray-500">📱 點擊按鈕將顯示 QR Code 供手機掃描</div>
+						<div class="text-xs text-gray-500">📱 點擊按鈕將顯示 QR Code 供掃描</div>
 					</div>
 				</div>
 
-				<!-- QR Code Display for Desktop -->
-				<div v-if="showQRCode && !isMobile" class="qr-code-section text-center">
+				<!-- QR Code Display -->
+				<div v-if="showQRCode" class="qr-code-section text-center">
 					<div class="bg-gray-50 p-8 rounded-lg border">
 						<div class="text-xl font-semibold mb-6">掃描 QR Code 完成贊助</div>
 						<div class="flex justify-center mb-6">
@@ -140,36 +136,11 @@
 				event.target.style.display = 'none';
 			};
 
-			const generateLinePayUrl = (amount) => {
-				// 使用實際的 LINE Pay 轉帳連結
-				// 基於提供的 LINE 連結：https://line.me/R/ch/1586237320/?forwardPath=/c2c/transfer&no=20271936013
-				const baseUrl = 'https://line.me/R/ch/1586237320/';
-				const params = new URLSearchParams({
-					forwardPath: '/c2c/transfer',
-					no: '20271936013',
-					amount: amount, // 添加金額參數
-					memo: `CyclePulse 贊助 - $${amount}` // 添加備註
-				});
-
-				return `${baseUrl}?${params.toString()}`;
-			};
 
 
-			const proceedToLinePay = async () => {
-				if (isMobile.value) {
-					// 手機端：需要選擇金額才能跳轉
-					const amount = selectedOption.value?.amount;
-					if (amount && amount >= 50) {
-						console.log(`準備使用 LINE Pay 贊助 $${amount}`);
-						const linePayUrl = generateLinePayUrl(amount);
-						window.open(linePayUrl, '_blank');
-						// 關閉 modal
-						emit('close');
-					}
-				} else {
-					// 桌面端：直接顯示 QR Code PNG
-					showQRCode.value = true;
-				}
+			const proceedToLinePay = () => {
+				// 直接顯示 QR Code PNG
+				showQRCode.value = true;
 			};
 
 			return {
