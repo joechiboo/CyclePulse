@@ -329,7 +329,7 @@ export default {
 }
 
 .modal-container {
-  @apply bg-cycle-dark rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-gray-700;
+  @apply bg-cycle-dark rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-gray-700;
 }
 
 .modal-header {
@@ -507,16 +507,226 @@ export default {
 
 /* 響應式設計 */
 @media (max-width: 640px) {
+  .modal-overlay {
+    @apply p-2;
+  }
+
   .modal-container {
-    @apply max-h-[95vh] m-2;
+    @apply max-h-[95vh] m-0 rounded-xl;
+  }
+
+  .modal-header {
+    @apply p-4;
+  }
+
+  .modal-title {
+    @apply text-xl;
   }
 
   .tab-buttons {
-    @apply flex-wrap;
+    @apply flex-wrap p-3 gap-1;
   }
 
   .tab-btn {
     @apply text-sm px-3 py-1.5;
+  }
+
+  .content-area {
+    @apply p-4;
+  }
+
+  .exercise-visual {
+    @apply p-2;
+  }
+
+  .ascii-art pre {
+    @apply text-xs;
+  }
+
+  .timeline-details {
+    @apply text-xs gap-2;
+  }
+}
+
+/* 極小螢幕優化 */
+@media (max-width: 480px) {
+  .modal-overlay {
+    @apply p-1;
+  }
+
+  .modal-container {
+    @apply max-h-[98vh] rounded-lg;
+  }
+
+  .modal-header {
+    @apply p-2;
+  }
+
+  .modal-title {
+    @apply text-base;
+  }
+
+  .tab-buttons {
+    @apply p-2 gap-1 grid grid-cols-2;
+  }
+
+  .tab-btn {
+    @apply text-xs px-2 py-1.5 min-h-[36px] flex items-center justify-center;
+  }
+
+  .content-area {
+    @apply p-3;
+  }
+
+  .guide-card {
+    @apply p-3;
+  }
+
+  .exercise-item {
+    @apply p-3 mb-3;
+  }
+
+  .exercise-header {
+    @apply mb-2;
+  }
+
+  .exercise-header strong {
+    @apply text-base;
+  }
+
+  .exercise-count {
+    @apply text-xs;
+  }
+
+  .exercise-visual {
+    @apply p-1 mb-2;
+  }
+
+  .exercise-tip {
+    @apply text-xs;
+  }
+
+  .warmup-timeline {
+    @apply space-y-3;
+  }
+
+  .timeline-item {
+    @apply gap-3;
+  }
+
+  .timeline-marker {
+    @apply min-w-[70px] text-xs;
+  }
+
+  .section-title {
+    @apply text-lg;
+  }
+
+  .guide-subtitle {
+    @apply text-base;
+  }
+}
+
+/* 超窄螢幕優化 (330px 寬度) */
+@media (max-width: 360px) {
+  .modal-overlay {
+    @apply p-0;
+  }
+
+  .modal-container {
+    @apply max-h-screen rounded-none w-full h-full;
+  }
+
+  .modal-header {
+    @apply p-2 flex-shrink-0;
+  }
+
+  .modal-title {
+    @apply text-sm;
+  }
+
+  .close-btn {
+    @apply w-8 h-8 text-lg;
+  }
+
+  .tab-buttons {
+    @apply p-1 gap-0.5 grid grid-cols-2 flex-shrink-0;
+  }
+
+  .tab-btn {
+    @apply text-xs px-1 py-1 min-h-[32px];
+  }
+
+  .content-area {
+    @apply p-2 flex-1 overflow-y-auto;
+  }
+
+  .section-title {
+    @apply text-base mb-2;
+  }
+
+  .guide-card {
+    @apply p-2 mb-3;
+  }
+
+  .guide-subtitle {
+    @apply text-sm mb-1;
+  }
+
+  .exercise-item {
+    @apply p-2 mb-2;
+  }
+
+  .exercise-header {
+    @apply mb-1 flex-col items-start gap-1;
+  }
+
+  .exercise-header strong {
+    @apply text-sm;
+  }
+
+  .exercise-count {
+    @apply text-xs text-gray-500;
+  }
+
+  .exercise-visual {
+    @apply p-1 mb-1;
+  }
+
+  .ascii-art pre {
+    @apply text-xs leading-tight;
+  }
+
+  .exercise-tip {
+    @apply text-xs;
+  }
+
+  .timeline-item {
+    @apply gap-2 flex-col;
+  }
+
+  .timeline-marker {
+    @apply min-w-full text-xs font-bold text-center;
+  }
+
+  .timeline-content {
+    @apply w-full;
+  }
+
+  .timeline-details {
+    @apply grid grid-cols-2 gap-1 text-xs;
+  }
+
+  .warmup-tips {
+    @apply p-2;
+  }
+
+  .warmup-tips ul {
+    @apply ml-2;
+  }
+
+  .warmup-tips li {
+    @apply text-xs;
   }
 }
 </style>
