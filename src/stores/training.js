@@ -15,7 +15,7 @@ export const useTrainingStore = defineStore('training', () => {
     {
       id: 'classic-interval',
       name: '經典',
-      duration: 17,
+      duration: 18,
       description: '暖身 + 10輪間歇 + 收操',
       stages: [
         { name: '暖身準備', duration: 300, intensity: 'low' }, // 5分鐘
@@ -43,7 +43,7 @@ export const useTrainingStore = defineStore('training', () => {
     {
       id: 'hill-climb',
       name: '爬坡',
-      duration: 19,
+      duration: 18,
       description: '暖身 + 3輪爬坡 + 收操',
       stages: [
         { name: '暖身準備', duration: 300, intensity: 'low' }, // 5分鐘
@@ -70,8 +70,8 @@ export const useTrainingStore = defineStore('training', () => {
     },
     {
       id: 'fat-burn',
-      name: '快速燃脂',
-      duration: 20,
+      name: '燃脂',
+      duration: 18,
       description: '短暖身 + 高變化間歇 + 短收操',
       stages: [
         { name: '快速暖身', duration: 180, intensity: 'low' }, // 3分鐘
@@ -90,7 +90,7 @@ export const useTrainingStore = defineStore('training', () => {
         { name: '中強度', duration: 90, intensity: 'medium' },
         { name: '衝刺', duration: 30, intensity: 'high' },
         { name: '恢復', duration: 60, intensity: 'low' },
-        { name: '快速收操', duration: 120, intensity: 'rest' } // 2分鐘
+        { name: '快速收操', duration: 180, intensity: 'rest' } // 3分鐘
       ]
     }
   ])
@@ -127,11 +127,6 @@ export const useTrainingStore = defineStore('training', () => {
     currentStageIndex.value = 0
     currentTime.value = selectedMode.value.stages[0]?.duration || 0
 
-    // 播放開始音效
-    if (window.playCyclePulseSound) {
-      window.playCyclePulseSound('start')
-    }
-
     startTimer()
   }
 
@@ -143,13 +138,6 @@ export const useTrainingStore = defineStore('training', () => {
     timerInterval.value = setInterval(() => {
       if (!isPaused.value && isTraining.value) {
         currentTime.value--
-
-        // 倒數 3 秒提醒音效
-        if (currentTime.value === 3 || currentTime.value === 2 || currentTime.value === 1) {
-          if (window.playCyclePulseSound) {
-            window.playCyclePulseSound('countdown')
-          }
-        }
 
         if (currentTime.value <= 0) {
           nextStage()
@@ -165,11 +153,6 @@ export const useTrainingStore = defineStore('training', () => {
       // 訓練完成
       completeTraining()
     } else {
-      // 播放階段切換音效
-      if (window.playCyclePulseSound) {
-        window.playCyclePulseSound('stage')
-      }
-
       // 切換到下一階段
       currentStageIndex.value = nextIndex
       currentTime.value = selectedMode.value.stages[nextIndex].duration
@@ -185,11 +168,6 @@ export const useTrainingStore = defineStore('training', () => {
     if (timerInterval.value) {
       clearInterval(timerInterval.value)
       timerInterval.value = null
-    }
-
-    // 播放完成音效
-    if (window.playCyclePulseSound) {
-      window.playCyclePulseSound('complete')
     }
 
     // 這裡可以添加訓練完成的邏輯，如記錄數據、顯示成果等
@@ -218,16 +196,6 @@ export const useTrainingStore = defineStore('training', () => {
     stopTraining()
     selectedMode.value = null
   }
-
-  // 初始化時設定經典模式為預設
-  const initializeDefaultMode = () => {
-    if (!selectedMode.value) {
-      selectedMode.value = availableModes.value.find(mode => mode.id === 'classic-interval')
-    }
-  }
-
-  // 自動初始化預設模式
-  initializeDefaultMode()
 
   return {
     // State

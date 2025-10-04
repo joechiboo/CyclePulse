@@ -17,7 +17,18 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(git remote set-url:*)",
-      "Bash(npm run deploy:*)"
+      "Bash(npm run deploy:*)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
+      "Bash(git restore:*)",
+      "Bash(npm install)",
+      "Bash(node:*)",
+      "Read(//c/Personal/Project/**)",
+      "Bash(npx http-server:*)",
+      "Bash(ipconfig)",
+      "Bash(openssl:*)",
+      "Bash(MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj \"/CN=localhost\")",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []
