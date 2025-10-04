@@ -28,6 +28,29 @@ class MiBandConnector {
     document.getElementById('status').textContent = `狀態：${status}`;
   }
 
+  async listAllServices() {
+    try {
+      this.log('🔍 掃描所有可用服務...');
+      const services = await this.server.getPrimaryServices();
+      this.log(`📋 找到 ${services.length} 個服務：`);
+
+      for (const service of services) {
+        this.log(`  📦 服務: ${service.uuid}`);
+        try {
+          const chars = await service.getCharacteristics();
+          for (const char of chars) {
+            this.log(`    └─ 特徵: ${char.uuid}`);
+          }
+        } catch (e) {
+          this.log(`    └─ 無法讀取特徵: ${e.message}`);
+        }
+      }
+      this.log('✅ 服務掃描完成');
+    } catch (error) {
+      this.log(`⚠️ 掃描服務失敗: ${error.message}`);
+    }
+  }
+
   async connect() {
     try {
       // 檢查瀏覽器支援
@@ -38,13 +61,19 @@ class MiBandConnector {
       this.log('🔍 開始掃描小米手環...');
       this.updateStatus('掃描中...');
 
-      // 請求藍牙設備（顯示所有設備）
+      // 請求藍牙設備（顯示所有設備，不限制服務）
       this.device = await navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,
+        filters: [
+          { namePrefix: 'Xiaomi' }
+        ],
         optionalServices: [
           this.MIBAND_SERVICE,
-          this.HEART_RATE_SERVICE,
-          '0000fee1-0000-1000-8000-00805f9b34fb'
+          '0000fee1-0000-1000-8000-00805f9b34fb',
+          '0000180a-0000-1000-8000-00805f9b34fb',
+          '0000180d-0000-1000-8000-00805f9b34fb',
+          '00001530-0000-3512-2118-0009af100700',
+          '00001800-0000-1000-8000-00805f9b34fb',
+          '00001801-0000-1000-8000-00805f9b34fb'
         ]
       });
 
@@ -60,14 +89,24 @@ class MiBandConnector {
 
       this.updateStatus(`已連接：${this.device.name}`);
 
-      // 嘗試認證（某些型號需要）
-      await this.authenticate();
+      // 先列出所有可用服務（這是最重要的！）
+      await this.listAllServices();
 
-      // 初始化心率服務
-      await this.setupHeartRate();
+      // 暫時跳過認證和心率設定，先看看有哪些服務
+      this.log('⚠️ 請查看上方日誌中的服務列表');
+      this.log('⚠️ 將服務 UUID 提供給開發者以繼續開發');
 
-      document.getElementById('startBtn').disabled = false;
-      this.log('🎉 連接完成！可以開始測量心率');
+      document.getElementById('startBtn').disabled = true;
+      return; // 先暫停，等看到服務列表再繼續
+
+      // // 嘗試認證（某些型號需要）
+      // await this.authenticate();
+
+      // // 初始化心率服務
+      // await this.setupHeartRate();
+
+      // document.getElementById('startBtn').disabled = false;
+      // this.log('🎉 連接完成！可以開始測量心率');
 
     } catch (error) {
       this.log(`❌ 連接錯誤：${error.message}`);
@@ -97,25 +136,38 @@ class MiBandConnector {
     try {
       this.log('💓 設定心率服務...');
 
-      const service = await this.server.getPrimaryService(this.HEART_RATE_SERVICE);
-
-      // 心率測量特徵
-      this.heartRateCharacteristic = await service.getCharacteristic(
-        this.HEART_RATE_MEASUREMENT
-      );
-      this.log('✅ 取得心率測量特徵');
-
-      // 心率控制特徵（某些型號有）
+      // 先嘗試標準心率服務
       try {
-        this.controlCharacteristic = await service.getCharacteristic(
-          this.HEART_RATE_CONTROL
+        const service = await this.server.getPrimaryService(this.HEART_RATE_SERVICE);
+        this.heartRateCharacteristic = await service.getCharacteristic(
+          this.HEART_RATE_MEASUREMENT
         );
-        this.log('✅ 取得心率控制特徵');
+        this.log('✅ 使用標準心率服務');
+        return;
       } catch (e) {
-        this.log('⚠️ 無控制特徵（某些型號正常）');
+        this.log('⚠️ 標準心率服務不可用，嘗試小米專屬服務...');
       }
 
-      this.log('✅ 心率服務已就緒');
+      // 使用小米專屬服務 (0000fee1)
+      try {
+        const miBandService = await this.server.getPrimaryService('0000fee1-0000-1000-8000-00805f9b34fb');
+        this.log('✅ 找到小米專屬服務 0xFEE1');
+
+        // 嘗試找心率特徵 (通常是 0x2A37 或小米自定義)
+        const characteristics = await miBandService.getCharacteristics();
+        this.log(`📋 找到 ${characteristics.length} 個特徵`);
+
+        for (const char of characteristics) {
+          this.log(`  - UUID: ${char.uuid}`);
+        }
+
+        // 嘗試使用感測器特徵
+        this.heartRateCharacteristic = await miBandService.getCharacteristic(this.SENSOR_CHARACTERISTIC);
+        this.log('✅ 使用小米感測器特徵');
+      } catch (e) {
+        this.log(`❌ 小米專屬服務失敗：${e.message}`);
+        throw new Error('無法找到心率服務，請查看日誌中列出的可用特徵');
+      }
 
     } catch (error) {
       this.log(`❌ 心率服務設定失敗：${error.message}`);
