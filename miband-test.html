@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小米手環心率監測</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      background: #2196F3;
+      color: white;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background: #1976D2;
+    }
+    #status {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    #heartRate {
+      font-size: 48px;
+      color: #e74c3c;
+      text-align: center;
+      margin: 30px 0;
+      font-weight: bold;
+    }
+    .log {
+      background: #1e1e1e;
+      color: #00ff00;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 5px;
+      line-height: 1.5;
+    }
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .info-box h3 {
+      margin-top: 0;
+      color: #856404;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏃 小米手環心率監測測試</h1>
+
+  <div class="info-box">
+    <h3>⚠️ 重要提醒：</h3>
+    <ul>
+      <li>必須使用 <strong>Android Chrome</strong> 瀏覽器</li>
+      <li>必須透過 <strong>HTTPS</strong> 訪問此頁面</li>
+      <li>手環需先在小米運動 App 配對過</li>
+      <li>測試時確保手環已充電且在範圍內</li>
+    </ul>
+  </div>
+
+  <button id="connectBtn">🔗 連接手環</button>
+  <button id="startBtn" disabled>▶️ 開始測量心率</button>
+  <button id="stopBtn" disabled>⏹️ 停止測量</button>
+
+  <div id="status">狀態：未連接</div>
+
+  <div id="heartRate">-- BPM</div>
+
+  <h3>除錯日誌：</h3>
+  <div id="log" class="log"></div>
+
+  <script src="miband.js"></script>
+</body>
+</html>
