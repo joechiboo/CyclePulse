@@ -28,7 +28,10 @@
       "Bash(ipconfig)",
       "Bash(openssl:*)",
       "Bash(MSYS_NO_PATHCONV=1 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj \"/CN=localhost\")",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(tasklist)"
     ],
     "deny": [],
     "ask": []

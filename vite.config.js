@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
-  base: '/CyclePulse/',
+  base: process.env.NODE_ENV === 'production' ? '/CyclePulse/' : '/',
   server: {
     port: 3000
   }
